@@ -51,10 +51,18 @@ export class AgricultureToolService {
   }
 
   async addTool(tool: AgricultureToolDraft, id: string): Promise<void> {
+    const createdAt = Date.now();
     await setDoc(doc(this.toolsCollection, id), {
       ...tool,
-      createdAt: Date.now(),
+      createdAt,
     });
+
+    this.toolsSubject.next(
+      [
+        ...this.toolsSubject.value.filter((existingTool) => existingTool.id !== id),
+        { ...tool, id, createdAt },
+      ].sort((first, second) => (second.createdAt ?? 0) - (first.createdAt ?? 0)),
+    );
   }
 
   async updateTool(id: string, tool: AgricultureToolDraft): Promise<void> {

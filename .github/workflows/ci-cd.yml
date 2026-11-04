@@ -24,7 +24,7 @@ jobs:
         continue-on-error: true
 
       - name: Start updated container
-        run: docker run -d --name ionic-crud --restart unless-stopped -p 8100:8100 ionic-crud:latest
+        run: docker run -d --name ionic-crud --restart unless-stopped -p 8101:8101 ionic-crud:latest
 
       - name: Verify app
         shell: powershell
@@ -32,7 +32,7 @@ jobs:
           $success = $false
           for ($i = 1; $i -le 15; $i++) {
             try {
-              Invoke-WebRequest http://localhost:8100/ -UseBasicParsing -TimeoutSec 2 | Out-Null
+              Invoke-WebRequest http://localhost:8101/ -UseBasicParsing -TimeoutSec 2 | Out-Null
               $success = $true
               break
             } catch {

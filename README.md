@@ -16,6 +16,31 @@ npm run build
 npm run lint
 ```
 
+## Run with Docker (Lab 6)
+
+From the project root, build the image and start the container:
+
+```bash
+docker build -t ionic-firestore-crud .
+docker run -d --name ionic-firestore-container -p 8101:8101 ionic-firestore-crud
+```
+
+Open `http://localhost:8101` and test adding, updating, and deleting equipment. The container runs the Ionic development server on port `8101`; Firestore records remain in Firebase when the container is stopped or removed.
+
+To inspect logs or stop and restart the same container:
+
+```bash
+docker logs ionic-firestore-container
+docker stop ionic-firestore-container
+docker start ionic-firestore-container
+```
+
+To remove the stopped container without removing its image:
+
+```bash
+docker rm ionic-firestore-container
+```
+
 ## Firebase
 
 The Firebase web-app configuration for project `user-crud-5d31d` is in `src/environments/environment.ts` and `src/environments/environment.prod.ts`. Firebase web configuration is included in client code by design; it is not an authorization secret.

@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AgricultureTool, AgricultureToolDraft } from '../tools/tool.model';
@@ -30,6 +30,8 @@ function localDateString(): string {
   standalone: false,
 })
 export class Tab2Page implements OnInit, OnDestroy {
+  private static readonly saveTimeoutMs = 15_000;
+
   tools: AgricultureTool[] = [];
   searchTerm = '';
   selectedFilter: ToolFilter = 'all';
@@ -40,15 +42,25 @@ export class Tab2Page implements OnInit, OnDestroy {
   editDraft: AgricultureToolDraft | null = null;
 
   private readonly subscriptions = new Subscription();
+  private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly toolService = inject(AgricultureToolService);
   private readonly alertController = inject(AlertController);
   private readonly toastController = inject(ToastController);
 
   ngOnInit(): void {
+    let hasReceivedInitialTools = false;
     this.subscriptions.add(
       this.toolService.tools$.subscribe((tools) => {
+        const newToolAdded = hasReceivedInitialTools &&
+          tools.some((tool) => !this.tools.some((existingTool) => existingTool.id === tool.id));
         this.tools = tools;
         this.isLoading = false;
+        if (newToolAdded) {
+          this.searchTerm = '';
+          this.selectedFilter = 'all';
+        }
+        hasReceivedInitialTools = true;
+        this.changeDetector.detectChanges();
       }),
     );
     this.subscriptions.add(
@@ -124,22 +136,51 @@ export class Tab2Page implements OnInit, OnDestroy {
     }
 
     this.isSavingEdit = true;
+    let saveSucceeded = false;
+    let saveTimedOut = false;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     try {
-      await this.toolService.updateTool(this.editingTool.id, {
+      const save = this.toolService.updateTool(this.editingTool.id, {
         ...this.editDraft,
         name: this.editDraft.name.trim(),
         brand: this.editDraft.brand.trim(),
         location: this.editDraft.location.trim(),
         notes: this.editDraft.notes.trim(),
       });
-      this.closeEdit();
-      await this.showToast('Tool details updated.', 'success');
+      await Promise.race([
+        save,
+        new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(
+            () => {
+              saveTimedOut = true;
+              reject(new Error('firestore-update-timeout'));
+            },
+            Tab2Page.saveTimeoutMs,
+          );
+        }),
+      ]);
+      saveSucceeded = true;
     } catch (error) {
       console.error('Unable to update agriculture tool in Firestore.', error);
-      await this.showToast('Could not update this tool. Please try again.', 'danger');
     } finally {
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
+      }
       this.isSavingEdit = false;
+      this.changeDetector.detectChanges();
     }
+
+    if (saveSucceeded) {
+      this.closeEdit();
+      this.changeDetector.detectChanges();
+      await this.showToast('Tool details updated.', 'success');
+      return;
+    }
+
+    const message = saveTimedOut
+      ? 'Firestore has not confirmed the update yet. It may still sync; check your inventory before retrying.'
+      : 'Could not update this tool. Please try again.';
+    await this.showToast(message, 'danger');
   }
 
   async confirmDelete(tool: AgricultureTool): Promise<void> {

@@ -75,6 +75,8 @@ export class Tab1Page implements OnInit, OnDestroy {
     }
 
     this.isSaving = true;
+    let saveSucceeded = false;
+    let saveTimedOut = false;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     try {
       const toolId = this.pendingToolId ?? this.toolService.createToolId();
@@ -99,13 +101,10 @@ export class Tab1Page implements OnInit, OnDestroy {
 
       this.tool = createEmptyTool();
       this.pendingToolId = null;
-      await this.showToast('Your new tool is in the inventory.', 'success');
+      saveSucceeded = true;
     } catch (error) {
       console.error('Unable to add tool to Firestore.', error);
-      const message = error instanceof Error && error.message === 'firestore-save-timeout'
-        ? 'Firestore has not confirmed the save yet. Check your inventory; retrying is safe.'
-        : 'Could not save this tool. Check your Firestore connection and try again.';
-      await this.showToast(message, 'danger');
+      saveTimedOut = error instanceof Error && error.message === 'firestore-save-timeout';
     } finally {
       if (timeoutId !== undefined) {
         clearTimeout(timeoutId);
@@ -113,6 +112,16 @@ export class Tab1Page implements OnInit, OnDestroy {
       this.isSaving = false;
       this.changeDetector.detectChanges();
     }
+
+    if (saveSucceeded) {
+      await this.showToast('Your new tool is in the inventory.', 'success');
+      return;
+    }
+
+    const message = saveTimedOut
+      ? 'Firestore has not confirmed the save yet. Check your inventory; retrying is safe.'
+      : 'Could not save this tool. Check your Firestore connection and try again.';
+    await this.showToast(message, 'danger');
   }
 
   private needsAttention(tool: { condition: string; lastMaintenance: string }): boolean {
