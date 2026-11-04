@@ -1,0 +1,91 @@
+<ion-content class="guide-content">
+  <main class="guide-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/tabs/tab1" aria-label="AgriTrack home">
+        <span class="brand-mark"><ion-icon name="hammer-outline"></ion-icon></span>
+        <span>agritrack<span class="brand-period">.</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="today-label">Good care goes a long way</span>
+          <span class="avatar" aria-label="Your equipment">A</span>
+      </div>
+    </header>
+
+    <section class="guide-hero">
+      <div class="guide-hero-copy">
+        <p class="eyebrow">A LITTLE KNOW-HOW</p>
+        <h1>Care for your equipment.<br /><span>It’ll take care of your fields.</span></h1>
+        <p>Simple habits keep your farm equipment safe, reliable, and ready for the next season.</p>
+      </div>
+      <div class="guide-hero-art" aria-hidden="true">
+        <span class="guide-sun"></span>
+        <span class="guide-leaf guide-leaf-one"></span>
+        <span class="guide-leaf guide-leaf-two"></span>
+        <span class="guide-leaf guide-leaf-three"></span>
+        <span class="guide-tool-handle"></span>
+        <span class="guide-tool-head"></span>
+      </div>
+    </section>
+
+    <section class="guide-stats" aria-label="Tool care overview">
+      <article>
+        <span class="guide-stat-icon"><ion-icon name="hammer-outline"></ion-icon></span>
+        <div><strong>{{ tools.length }}</strong><span>tools in your inventory</span></div>
+      </article>
+      <article>
+        <span class="guide-stat-icon attention-icon"><ion-icon name="build-outline"></ion-icon></span>
+        <div><strong>{{ attentionCount }}</strong><span>need maintenance</span></div>
+      </article>
+      <article>
+        <span class="guide-stat-icon"><ion-icon name="grid-outline"></ion-icon></span>
+        <div><strong>{{ categoryCount }}</strong><span>categories covered</span></div>
+      </article>
+    </section>
+
+    <section class="tips-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">THE GOOD HABITS</p>
+          <h2>Three small things that make a big difference</h2>
+        </div>
+      </div>
+      <div class="tips-grid">
+        <article class="tip-card">
+          <span class="tip-number">01</span>
+          <span class="tip-icon"><ion-icon name="water-outline"></ion-icon></span>
+          <h3>Clean after every use</h3>
+          <p>Remove soil and plant residue, then dry metal parts before storage. Clean equipment works better and lasts longer.</p>
+          <span class="tip-tag">AFTER FIELDWORK</span>
+        </article>
+        <article class="tip-card">
+          <span class="tip-number">02</span>
+          <span class="tip-icon"><ion-icon name="sunny-outline"></ion-icon></span>
+          <h3>Store equipment properly</h3>
+          <p>Keep machinery in a dry, ventilated space. Secure attachments and cover sharp or moving parts for safety.</p>
+          <span class="tip-tag">READY FOR NEXT TIME</span>
+        </article>
+        <article class="tip-card">
+          <span class="tip-number">03</span>
+          <span class="tip-icon"><ion-icon name="construct-outline"></ion-icon></span>
+          <h3>Service before the season</h3>
+          <p>Check fluid levels, inspect belts and guards, sharpen blades, and test safety features before work begins.</p>
+          <span class="tip-tag">PRE-SEASON CHECKLIST</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="care-callout">
+      <span class="callout-icon"><ion-icon name="clipboard-outline"></ion-icon></span>
+      <div>
+        <p class="eyebrow">YOUR NEXT STEP</p>
+        <h2>Keep every tool’s condition up to date.</h2>
+        <p>Mark equipment as serviced or flag anything that needs a closer inspection.</p>
+      </div>
+      <a routerLink="/tabs/tab2" class="callout-link">
+        Open inventory <ion-icon name="arrow-forward-outline"></ion-icon>
+      </a>
+    </section>
+
+    <footer class="guide-footer">Well-kept equipment helps the whole farm flourish <span>✳</span></footer>
+  </main>
+</ion-content>

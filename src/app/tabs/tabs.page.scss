@@ -1,0 +1,20 @@
+.inventory-tab-bar {
+  --background: #fff;
+  --border: 1px solid #e8ede7;
+  --color: #89938b;
+  --color-selected: #286044;
+  height: 61px;
+  padding: 4px 0 max(env(safe-area-inset-bottom), 4px);
+}
+
+.inventory-tab-bar ion-tab-button {
+  max-width: 180px;
+  font-size: 10px;
+  font-weight: 550;
+  --ripple-color: #e5eee3;
+}
+
+.inventory-tab-bar ion-tab-button ion-icon {
+  margin-bottom: 2px;
+  font-size: 19px;
+}

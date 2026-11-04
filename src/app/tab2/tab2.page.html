@@ -1,0 +1,270 @@
+<ion-content class="garden-content">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content pullingText="Pull to refresh your equipment inventory"></ion-refresher-content>
+  </ion-refresher>
+
+  <main class="page-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/tabs/tab1" aria-label="AgriTrack home">
+        <span class="brand-mark"><ion-icon name="hammer-outline"></ion-icon></span>
+        <span>agritrack<span class="brand-period">.</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="today-label">Equipment, ready when you need it</span>
+        <span class="avatar" aria-label="Your equipment">A</span>
+      </div>
+    </header>
+
+    <section class="collection-heading">
+      <div>
+        <p class="eyebrow">YOUR AGRICULTURE EQUIPMENT</p>
+        <h1>My inventory<span class="heading-period">.</span></h1>
+        <p class="heading-note">Find your equipment, check its condition, and keep it ready for the next season.</p>
+      </div>
+      <a class="add-link" routerLink="/tabs/tab1">
+        <ion-icon name="add-outline"></ion-icon>
+        Add a tool
+      </a>
+    </section>
+
+    <section class="overview-grid" aria-label="Equipment inventory summary">
+      <article class="overview-card total-card">
+        <span class="overview-icon"><ion-icon name="hammer-outline"></ion-icon></span>
+        <div><strong>{{ tools.length }}</strong><span>tools in inventory</span></div>
+        <span class="overview-detail">your farm kit</span>
+      </article>
+      <article class="overview-card due-card">
+        <span class="overview-icon"><ion-icon name="build-outline"></ion-icon></span>
+        <div><strong>{{ attentionCount }}</strong><span>need attention</span></div>
+        <span class="overview-detail" [class.quiet]="attentionCount === 0">
+          {{ attentionCount === 0 ? 'all ready to go' : 'time for service' }}
+        </span>
+      </article>
+      <article class="overview-card healthy-card">
+        <span class="overview-icon"><ion-icon name="grid-outline"></ion-icon></span>
+        <div><strong>{{ categoryCount }}</strong><span>tool categories</span></div>
+        <span class="overview-detail">a well-stocked shed</span>
+      </article>
+    </section>
+
+    <section class="collection-panel">
+      <div class="panel-top">
+        <div>
+          <p class="eyebrow">EVERYTHING, IN ONE PLACE</p>
+          <h2>All equipment <span>{{ tools.length }}</span></h2>
+        </div>
+        <ion-searchbar
+          class="tool-search"
+          [(ngModel)]="searchTerm"
+          placeholder="Search equipment"
+          aria-label="Search agriculture equipment"
+          debounce="150"
+        ></ion-searchbar>
+      </div>
+
+      <ion-segment [(ngModel)]="selectedFilter" class="tool-filters" aria-label="Filter equipment">
+        <ion-segment-button value="all">
+          <ion-label>All equipment</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="attention">
+          <ion-label>Needs care <span class="filter-count">{{ attentionCount }}</span></ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="ready">
+          <ion-label>In good shape</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      @if (isLoading) {
+        <div class="loading-state">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Checking your equipment…</span>
+        </div>
+      }
+
+      @if (!isLoading && filteredTools.length) {
+        <div class="tool-list">
+          @for (tool of filteredTools; track tool.id) {
+            <ion-item-sliding>
+              <ion-item lines="none" class="tool-item">
+                <div class="tool-avatar" slot="start">
+                  <ion-icon [name]="tool.category === 'Power equipment' ? 'flash-outline' : 'hammer-outline'"></ion-icon>
+                </div>
+                <ion-label class="tool-label">
+                  <div class="tool-name-line">
+                    <h3>{{ tool.name }}</h3>
+                    <span class="tool-status" [class.status-due]="needsMaintenance(tool)">
+                      <span class="status-dot"></span>
+                      {{ getToolStatus(tool) }}
+                    </span>
+                  </div>
+                  <p class="tool-brand-category">{{ tool.brand || 'Agriculture tool' }} · {{ tool.category }}</p>
+                  <div class="tool-meta">
+                    <span><ion-icon name="location-outline"></ion-icon>{{ tool.location || 'Storage not set' }}</span>
+                    <span><ion-icon name="construct-outline"></ion-icon>{{ tool.condition }}</span>
+                    <span><ion-icon name="calendar-outline"></ion-icon>Serviced {{ tool.lastMaintenance | date:'mediumDate' }}</span>
+                  </div>
+                  @if (tool.notes) {
+                    <p class="tool-notes">{{ tool.notes }}</p>
+                  }
+                </ion-label>
+                <div class="tool-actions" slot="end">
+                  <ion-button fill="clear" class="service-button" (click)="markServiced(tool)" aria-label="Mark equipment as serviced">
+                    <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                    Serviced
+                  </ion-button>
+                  <ion-button fill="clear" class="edit-button" (click)="openEdit(tool)" aria-label="Edit tool">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" class="delete-button" (click)="confirmDelete(tool)" [attr.aria-label]="'Delete ' + tool.name">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="danger" expandable (click)="confirmDelete(tool)">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  Remove
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          }
+        </div>
+      }
+
+      @if (!isLoading && !filteredTools.length) {
+        <div class="empty-state">
+          <span class="empty-illustration"><ion-icon name="hammer-outline"></ion-icon></span>
+          <h3>{{ tools.length ? 'No equipment found' : 'Your inventory is ready to fill' }}</h3>
+          <p>
+            {{ tools.length
+              ? 'Try another search or choose a different filter.'
+              : 'Add your first agriculture tool and keep its condition, storage spot, and service date close by.' }}
+          </p>
+          @if (!tools.length) {
+            <a routerLink="/tabs/tab1" class="empty-link">
+              Add your first tool <ion-icon name="arrow-forward-outline"></ion-icon>
+            </a>
+          }
+        </div>
+      }
+    </section>
+
+    <footer class="page-footer">Well-kept tools help the whole farm flourish <span>✳</span></footer>
+  </main>
+
+  <ion-modal [isOpen]="isEditOpen" (didDismiss)="closeEdit()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Edit tool</ion-title>
+          <ion-button slot="end" fill="clear" color="medium" (click)="closeEdit()" aria-label="Close edit form">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        @if (editDraft; as draft) {
+          <div class="edit-form">
+            <p class="eyebrow">UPDATE YOUR INVENTORY</p>
+            <h2>Keep the details fresh.</h2>
+            <ion-input
+              name="editName"
+              label="Tool name"
+              labelPlacement="stacked"
+              fill="outline"
+              [(ngModel)]="draft.name"
+              required
+              maxlength="70"
+            ></ion-input>
+            <ion-select
+              name="editCategory"
+              label="Tool type"
+              labelPlacement="stacked"
+              fill="outline"
+              interface="popover"
+              [(ngModel)]="draft.category"
+              required
+            >
+              <ion-select-option value="Tillage">Tillage</ion-select-option>
+              <ion-select-option value="Planting">Planting</ion-select-option>
+              <ion-select-option value="Irrigation">Irrigation</ion-select-option>
+              <ion-select-option value="Harvesting">Harvesting</ion-select-option>
+              <ion-select-option value="Power equipment">Power equipment</ion-select-option>
+              <ion-select-option value="Safety gear">Safety gear</ion-select-option>
+            </ion-select>
+            <ion-input
+              name="editBrand"
+              label="Brand"
+              labelPlacement="stacked"
+              fill="outline"
+              [(ngModel)]="draft.brand"
+              maxlength="60"
+            ></ion-input>
+            <ion-select
+              name="editLocation"
+              label="Stored at"
+              labelPlacement="stacked"
+              fill="outline"
+              interface="popover"
+              [(ngModel)]="draft.location"
+            >
+              <ion-select-option value="Equipment shed">Equipment shed</ion-select-option>
+              <ion-select-option value="Barn">Barn</ion-select-option>
+              <ion-select-option value="Workshop">Workshop</ion-select-option>
+              <ion-select-option value="Field storage">Field storage</ion-select-option>
+              <ion-select-option value="Other">Other</ion-select-option>
+            </ion-select>
+            <ion-select
+              name="editCondition"
+              label="Condition"
+              labelPlacement="stacked"
+              fill="outline"
+              interface="popover"
+              [(ngModel)]="draft.condition"
+            >
+              <ion-select-option value="Excellent">Excellent</ion-select-option>
+              <ion-select-option value="Good">Good</ion-select-option>
+              <ion-select-option value="Needs attention">Needs attention</ion-select-option>
+            </ion-select>
+            <div class="edit-form-row">
+              <ion-input
+                name="editLastMaintenance"
+                label="Last serviced"
+                labelPlacement="stacked"
+                fill="outline"
+                type="date"
+                [(ngModel)]="draft.lastMaintenance"
+                required
+              ></ion-input>
+              <ion-input
+                name="editPurchaseDate"
+                label="Purchase date"
+                labelPlacement="stacked"
+                fill="outline"
+                type="date"
+                [(ngModel)]="draft.purchaseDate"
+              ></ion-input>
+            </div>
+            <ion-textarea
+              name="editNotes"
+              label="Notes"
+              labelPlacement="stacked"
+              fill="outline"
+              [(ngModel)]="draft.notes"
+              maxlength="240"
+              rows="3"
+            ></ion-textarea>
+            <ion-button expand="block" class="save-button" [disabled]="isSavingEdit || !draft.name.trim()" (click)="saveEdit()">
+              @if (isSavingEdit) {
+                <ion-spinner name="crescent"></ion-spinner>
+                Saving…
+              } @else {
+                Save changes
+              }
+            </ion-button>
+          </div>
+        }
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

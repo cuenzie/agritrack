@@ -1,0 +1,168 @@
+<ion-content class="garden-content">
+  <main class="page-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/tabs/tab1" aria-label="AgriTrack home">
+        <span class="brand-mark"><ion-icon name="hammer-outline"></ion-icon></span>
+        <span>agritrack<span class="brand-period">.</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="today-label">Equipment, ready when you need it</span>
+        <span class="avatar" aria-label="Your farm">A</span>
+      </div>
+    </header>
+
+    <section class="welcome-row">
+      <div>
+        <p class="eyebrow">YOUR FARM, WELL EQUIPPED</p>
+        <h1>Good tools. Better <span>harvests.</span></h1>
+      </div>
+      <p class="welcome-note">A tidy place for the equipment that<br class="desktop-break" /> keeps your farm moving.</p>
+    </section>
+
+    <section class="hero-card">
+      <div class="hero-copy">
+        <span class="hero-kicker"><ion-icon name="construct-outline"></ion-icon> YOUR EQUIPMENT, IN ORDER</span>
+        <h2>Ready equipment.<br />Room to grow.</h2>
+        <p>Know what you have, where it lives, and when it needs servicing.</p>
+        <a class="hero-link" routerLink="/tabs/tab2">
+          Visit your inventory <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span class="tractor-illustration">🚜</span>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <strong>{{ toolsCount }}</strong>
+          <span>tools in your inventory</span>
+        </div>
+        <span class="stats-divider"></span>
+        <div>
+          <strong>{{ attentionCount }}</strong>
+          <span>need a little care</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">READY FOR THE NEXT SEASON</p>
+          <h2>Add farm equipment</h2>
+        </div>
+        <span class="section-icon"><ion-icon name="add-outline"></ion-icon></span>
+      </div>
+
+      <form class="tool-form" (ngSubmit)="addTool()">
+        <div class="form-grid">
+          <ion-input
+            name="name"
+            label="Tool name"
+            labelPlacement="stacked"
+            fill="outline"
+            placeholder="e.g. Rotary tiller"
+            [(ngModel)]="tool.name"
+            required
+            maxlength="70"
+          ></ion-input>
+          <ion-select
+            name="category"
+            label="Tool type"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            [(ngModel)]="tool.category"
+            required
+          >
+            <ion-select-option value="Tillage">Tillage</ion-select-option>
+            <ion-select-option value="Planting">Planting</ion-select-option>
+            <ion-select-option value="Irrigation">Irrigation</ion-select-option>
+            <ion-select-option value="Harvesting">Harvesting</ion-select-option>
+            <ion-select-option value="Power equipment">Power equipment</ion-select-option>
+            <ion-select-option value="Safety gear">Safety gear</ion-select-option>
+          </ion-select>
+          <ion-input
+            name="brand"
+            label="Brand (optional)"
+            labelPlacement="stacked"
+            fill="outline"
+            placeholder="e.g. John Deere"
+            [(ngModel)]="tool.brand"
+            maxlength="60"
+          ></ion-input>
+          <ion-select
+            name="location"
+            label="Stored at"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            [(ngModel)]="tool.location"
+            placeholder="Choose a spot"
+          >
+            <ion-select-option value="Equipment shed">Equipment shed</ion-select-option>
+            <ion-select-option value="Barn">Barn</ion-select-option>
+            <ion-select-option value="Workshop">Workshop</ion-select-option>
+            <ion-select-option value="Field storage">Field storage</ion-select-option>
+            <ion-select-option value="Other">Other</ion-select-option>
+          </ion-select>
+          <ion-select
+            name="condition"
+            label="Condition"
+            labelPlacement="stacked"
+            fill="outline"
+            interface="popover"
+            [(ngModel)]="tool.condition"
+          >
+            <ion-select-option value="Excellent">Excellent</ion-select-option>
+            <ion-select-option value="Good">Good</ion-select-option>
+            <ion-select-option value="Needs attention">Needs attention</ion-select-option>
+          </ion-select>
+          <ion-input
+            name="lastMaintenance"
+            label="Last serviced"
+            labelPlacement="stacked"
+            fill="outline"
+            type="date"
+            [(ngModel)]="tool.lastMaintenance"
+            required
+          ></ion-input>
+          <ion-input
+            name="purchaseDate"
+            label="Purchase date (optional)"
+            labelPlacement="stacked"
+            fill="outline"
+            type="date"
+            [(ngModel)]="tool.purchaseDate"
+          ></ion-input>
+          <ion-textarea
+            class="notes-input"
+            name="notes"
+            label="Notes"
+            labelPlacement="stacked"
+            fill="outline"
+            placeholder="Size, material, maintenance reminders..."
+            [(ngModel)]="tool.notes"
+            maxlength="240"
+            rows="2"
+            autoGrow="true"
+          ></ion-textarea>
+        </div>
+
+        <div class="form-footer">
+          <p><ion-icon name="shield-checkmark-outline"></ion-icon> Your equipment inventory syncs with Firestore.</p>
+          <ion-button type="submit" class="save-button" [disabled]="isSaving">
+            @if (isSaving) {
+              <ion-spinner name="crescent"></ion-spinner>
+              Saving tool…
+            } @else {
+              <ion-icon slot="start" name="hammer-outline"></ion-icon>
+              Add to inventory
+            }
+          </ion-button>
+        </div>
+      </form>
+    </section>
+
+    <footer class="page-footer">Well-kept tools help the whole farm flourish <span>✳</span></footer>
+  </main>
+</ion-content>
