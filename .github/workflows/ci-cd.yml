@@ -1,4 +1,4 @@
-name: Deploy Ionic App Locally
+name: Deploy Agritrack Locally
 
 on:
   push:
@@ -16,15 +16,18 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Build Ionic image
-        run: docker build -t ionic-crud:latest .
+      - name: Check Docker
+        run: docker version
+
+      - name: Build Agritrack image
+        run: docker build -t agritrack:latest .
 
       - name: Remove previous container
-        run: docker rm -f ionic-crud
+        run: docker rm -f agritrack-container
         continue-on-error: true
 
       - name: Start updated container
-        run: docker run -d --name ionic-crud --restart unless-stopped -p 8101:8101 ionic-crud:latest
+        run: docker run -d --name agritrack-container --restart unless-stopped -p 8101:8101 agritrack:latest
 
       - name: Verify app
         shell: powershell
@@ -41,6 +44,6 @@ jobs:
           }
 
           if (-not $success) {
-            docker logs ionic-crud
+            docker logs agritrack-container
             exit 1
           }
