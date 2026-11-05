@@ -69,8 +69,8 @@ export class Tab1Page implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.tool.name.trim() || !this.tool.category || !this.tool.lastMaintenance) {
-      await this.showToast('Add a tool name, choose a type, and select the last serviced date before saving.', 'danger');
+    if (!this.tool.name.trim() || !this.tool.condition) {
+      await this.showToast('Add a tool name and choose its condition before saving.', 'danger');
       return;
     }
 

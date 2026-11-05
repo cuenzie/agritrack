@@ -21,4 +21,14 @@ describe('Tab1Page', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('shows only the requested equipment fields', () => {
+    const fieldNames = Array.from(
+      fixture.nativeElement.querySelectorAll(
+        'form.tool-form ion-input, form.tool-form ion-select, form.tool-form ion-textarea',
+      ) as NodeListOf<HTMLElement>,
+    ).map((field) => field.getAttribute('name'));
+
+    expect(fieldNames).toEqual(['name', 'condition', 'purchaseDate']);
+  });
 });

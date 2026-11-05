@@ -13,7 +13,7 @@
 
     <section class="welcome-row">
       <div>
-        <p class="eyebrow">YOUR FARM, WELL EQUIPPED</p>
+        <p class="eyebrow">MY FARM, WELL EQUIPPED</p>
         <h1>Good tools. Better <span>harvests.</span></h1>
       </div>
       <p class="welcome-note">A tidy place for the equipment that<br class="desktop-break" /> keeps your farm moving.</p>
@@ -66,46 +66,6 @@
             maxlength="70"
           ></ion-input>
           <ion-select
-            name="category"
-            label="Tool type"
-            labelPlacement="stacked"
-            fill="outline"
-            interface="popover"
-            [(ngModel)]="tool.category"
-            required
-          >
-            <ion-select-option value="Tillage">Tillage</ion-select-option>
-            <ion-select-option value="Planting">Planting</ion-select-option>
-            <ion-select-option value="Irrigation">Irrigation</ion-select-option>
-            <ion-select-option value="Harvesting">Harvesting</ion-select-option>
-            <ion-select-option value="Power equipment">Power equipment</ion-select-option>
-            <ion-select-option value="Safety gear">Safety gear</ion-select-option>
-          </ion-select>
-          <ion-input
-            name="brand"
-            label="Brand (optional)"
-            labelPlacement="stacked"
-            fill="outline"
-            placeholder="e.g. John Deere"
-            [(ngModel)]="tool.brand"
-            maxlength="60"
-          ></ion-input>
-          <ion-select
-            name="location"
-            label="Stored at"
-            labelPlacement="stacked"
-            fill="outline"
-            interface="popover"
-            [(ngModel)]="tool.location"
-            placeholder="Choose a spot"
-          >
-            <ion-select-option value="Equipment shed">Equipment shed</ion-select-option>
-            <ion-select-option value="Barn">Barn</ion-select-option>
-            <ion-select-option value="Workshop">Workshop</ion-select-option>
-            <ion-select-option value="Field storage">Field storage</ion-select-option>
-            <ion-select-option value="Other">Other</ion-select-option>
-          </ion-select>
-          <ion-select
             name="condition"
             label="Condition"
             labelPlacement="stacked"
@@ -118,15 +78,6 @@
             <ion-select-option value="Needs attention">Needs attention</ion-select-option>
           </ion-select>
           <ion-input
-            name="lastMaintenance"
-            label="Last serviced"
-            labelPlacement="stacked"
-            fill="outline"
-            type="date"
-            [(ngModel)]="tool.lastMaintenance"
-            required
-          ></ion-input>
-          <ion-input
             name="purchaseDate"
             label="Purchase date (optional)"
             labelPlacement="stacked"
@@ -134,18 +85,6 @@
             type="date"
             [(ngModel)]="tool.purchaseDate"
           ></ion-input>
-          <ion-textarea
-            class="notes-input"
-            name="notes"
-            label="Notes"
-            labelPlacement="stacked"
-            fill="outline"
-            placeholder="Size, material, maintenance reminders..."
-            [(ngModel)]="tool.notes"
-            maxlength="240"
-            rows="2"
-            autoGrow="true"
-          ></ion-textarea>
         </div>
 
         <div class="form-footer">
